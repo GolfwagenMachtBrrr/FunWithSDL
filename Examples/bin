@@ -1,0 +1,65 @@
+ // render tilemap
+        SDL_RenderSetViewport(renderer, &center);
+
+        int startTileX = camera.x / tilesize;
+        int startTileY = camera.y / tilesize;
+        int endTileX = (camera.x + camera.w) / tilesize;
+        int endTileY = (camera.y + camera.h) / tilesize;
+
+        for (int x = startTileX; x <= endTileX && x < tilesX; x++)
+        {
+            for (int y = startTileY; y <= endTileY && y < tilesY; y++)
+            {
+                int worldX = x * tilesize;
+                int worldY = y * tilesize;
+
+                SDL_Rect renderRect = {
+                    worldX - camera.x,
+                    worldY - camera.y,
+                    tilesize,
+                    tilesize
+                };
+
+                SDL_Rect* tilemap_tile = &center_tilemap[x][y].get()->rectangle;
+
+
+                switch (center_tilemap[x][y]->rendertype)
+                {
+                    case EMPTY:
+                        SDL_SetRenderDrawColor(renderer, 0,0,0,SDL_ALPHA_OPAQUE);
+                        SDL_RenderDrawRect(renderer, &renderRect);
+                        break;
+                    case DEFAULT:
+                        SDL_SetRenderDrawColor(renderer, 0,0,0,SDL_ALPHA_OPAQUE);
+                        SDL_RenderCopy(renderer, tile_texture, tilemap_tile, &renderRect);
+                        break;
+                    case IN_SELECTION:
+                        SDL_SetTextureColorMod(tile_texture, 255, 0, 0);
+                        SDL_RenderCopy(renderer, tile_texture, tilemap_tile, &renderRect);
+                        SDL_SetTextureColorMod(tile_texture, 255, 255, 255);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+
+        switch (event.key.keysym.scancode) {
+                        case SDL_SCANCODE_RIGHT:
+                        camera.x += tilesize;
+                        if (camera.x > maxCameraX) camera.x = maxCameraX;
+                        break;
+                        case SDL_SCANCODE_LEFT:
+                        camera.x -= tilesize;
+                        if (camera.x < 0) camera.x = 0;
+                        break;
+                        case SDL_SCANCODE_DOWN:
+                        camera.y += tilesize;
+                        if (camera.y > maxCameraY) camera.y = maxCameraY;
+                        break;
+                        case SDL_SCANCODE_UP:
+                        camera.y -= tilesize;
+                        if (camera.y < 0) camera.y = 0;
+                        break;
+                    }

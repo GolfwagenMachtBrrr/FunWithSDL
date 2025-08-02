@@ -1,0 +1,3 @@
+/home/judelhuu/CLionProjects/SDL_Tutorial/build/CMakeFiles/SDL_Tutorial.dir
+/home/judelhuu/CLionProjects/SDL_Tutorial/build/CMakeFiles/edit_cache.dir
+/home/judelhuu/CLionProjects/SDL_Tutorial/build/CMakeFiles/rebuild_cache.dir

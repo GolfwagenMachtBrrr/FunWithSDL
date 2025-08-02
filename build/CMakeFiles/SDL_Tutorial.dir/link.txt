@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/SDL_Tutorial.dir/link.d CMakeFiles/SDL_Tutorial.dir/main.cpp.o -o SDL_Tutorial  /home/judelhuu/.vcpkg-clion/vcpkg/installed/x64-linux/debug/lib/libSDL2d.a /home/judelhuu/.vcpkg-clion/vcpkg/installed/x64-linux/debug/lib/libglad.a -lm -pthread
