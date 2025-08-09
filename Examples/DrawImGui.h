@@ -6,48 +6,65 @@
 #define DRAWIMGUI_H
 
 #include <SDL2/SDL.h>
-#include <imgui.h>
+
+#include "../imgui/imgui.h"
+#include "../imgui/backends/imgui_impl_sdl2.h"
+#include "../imgui/backends/imgui_impl_sdlrenderer2.h"
 
 void DrawIMGUI()
 {
-    SDL_Window* window=nullptr;
     SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow("C++ SDL2 Window",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 20*16,15*16,SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("ImGui + SDL_Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_Renderer* renderer = nullptr;
-    renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
 
+    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
 
-    SDL_Surface* tile_map_surface = SDL_LoadBMP("/home/judelhuu/CLionProjects/SDL_Tutorial/Images/Tiles/tiles.bmp");
-    SDL_Texture* tile_texture = SDL_CreateTextureFromSurface(renderer, tile_map_surface);
-    SDL_FreeSurface(tile_map_surface);
-
-
-    // retr pointer to keys
-    const Uint8* keys = SDL_GetKeyboardState(NULL);
-
-    // Game Loop
-    bool isRunning = true;
-    while (isRunning)
+    bool running = true;
+    bool shwodemowindow = true;
+    float somefloat = 0.0f;
+    SDL_Event event;
+    while (running)
     {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-
-            if (event.type == SDL_QUIT) {
-                isRunning = false;
-            }
+        while (SDL_PollEvent(&event))
+        {
+            ImGui_ImplSDL2_ProcessEvent(&event);
+            if (event.type == SDL_QUIT) running = false;
         }
 
-        // Set Background color Black
-        SDL_SetRenderDrawColor(renderer, 0x66,0,0, SDL_ALPHA_OPAQUE);
+        ImGui_ImplSDLRenderer2_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
+        if (shwodemowindow)
+            ImGui::ShowDemoWindow();
+
+
+        ImGui::Begin("Hello ImGui");
+        ImGui::Text("SDL2 Renderer backend");
+        ImGui::Checkbox("Demo", &shwodemowindow);
+        ImGui::SliderFloat("float", &somefloat, 0.0f, 1.0f);
+        ImGui::End();
+
+
+        ImGui::Render();
+        SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
-
-
-        // Draw TextureRect
+        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(),renderer);
         SDL_RenderPresent(renderer);
     }
 
-
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return;
 }
 
 #endif //DRAWIMGUI_H

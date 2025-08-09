@@ -73,8 +73,6 @@ private:
     CollisionManager();
     ~CollisionManager();
 
-
-    // TODO: 2 Vectoren die sich Buffern
     std::vector<std::shared_ptr<GameEntity>> m_objects;
 };
 

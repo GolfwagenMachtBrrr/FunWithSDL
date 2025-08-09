@@ -5,8 +5,34 @@ set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_CLASS ./Classes)
 set(PROJECT_HEADERS Examples)
 
+find_package(SDL2 CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
+find_package(SDL2_image CONFIG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(oatpp-zlib CONFIG REQUIRED)
+find_package(zlib-ng CONFIG REQUIRED)
+find_package(SDL2_mixer CONFIG REQUIRED)
+
+include_directories(
+        ${CMAKE_SOURCE_DIR}/imgui
+        ${CMAKE_SOURCE_DIR}/imgui/include
+)
+
+set(IMGUI_SRC
+        imgui/imgui.cpp
+        imgui/imgui_draw.cpp
+        imgui/imgui_tables.cpp
+        imgui/imgui_widgets.cpp
+        imgui/imgui_demo.cpp
+        imgui/backends/imgui_impl_sdl2.cpp
+        imgui/backends/imgui_impl_sdlrenderer2.cpp
+)
+
+
 
 add_executable(SDL_Tutorial main.cpp
+        ${IMGUI_SRC}
         Examples/DrawOnWindow.h
         Examples/DrawWithShapes.h
         Examples/DrawWithTextureRect.h
@@ -53,24 +79,15 @@ add_executable(SDL_Tutorial main.cpp
         Examples/DrawImGui.h
 )
 
-target_include_directories(SDL_Tutorial PUBLIC ${CMAKE_SOURCE_DIR})
+target_include_directories(SDL_Tutorial PRIVATE
+        ${CMAKE_SOURCE_DIR}
+)
 
 
-find_package(SDL2 CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED)
-find_package(SDL2_ttf CONFIG REQUIRED)
-find_package(SDL2_image CONFIG REQUIRED)
-find_package(PNG REQUIRED)
-find_package(oatpp-zlib CONFIG REQUIRED)
-find_package(zlib-ng CONFIG REQUIRED)
-find_package(SDL2_mixer CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
 
 # Auf Linux reicht SDL2::SDL2 – SDL2main ist nur für Windows nötig
-target_link_libraries(SDL_Tutorial
-        PRIVATE
+target_link_libraries(SDL_Tutorial PRIVATE
         SDL2::SDL2
-        glad::glad
 )
 
 target_link_libraries(SDL_Tutorial PRIVATE $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>)
@@ -79,4 +96,3 @@ target_link_libraries(SDL_Tutorial PRIVATE PNG::PNG)
 target_link_libraries(SDL_Tutorial PRIVATE oatpp::oatpp-zlib)
 target_link_libraries(SDL_Tutorial PRIVATE zlib-ng::zlib)
 target_link_libraries(SDL_Tutorial PRIVATE $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>)
-target_link_libraries(SDL_Tutorial PRIVATE imgui::imgui)

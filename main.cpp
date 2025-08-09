@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <imgui.h>
+#include <imgui/imgui.h>
 
 #include "Classes/include/Sprite.h"
 #include "Classes/include/AnimatedSprite.h"
@@ -10,6 +10,10 @@
 #include "Examples/DrawPongGame.h"
 #include "Examples/DrawTileMap.h"
 #include "Examples/DrawImGui.h"
+
+#include "../imgui/imgui.h"
+#include "../imgui/backends/imgui_impl_sdl2.h"
+#include "../imgui/backends/imgui_impl_sdlrenderer2.h"
 
 #include <iostream>
 #include <memory>
@@ -65,10 +69,6 @@ void InitSDLApp() {
 
 
 int main() {
-    DrawIMGUI();
-    return 0;
-
-
     SDL_Window* window=nullptr;
     SDL_Init(SDL_INIT_VIDEO);
     int windowWidth = 1920, windowHeight = 1080;
@@ -87,6 +87,14 @@ int main() {
     SDL_FreeSurface(empty_map_surface);
 
 
+    // ImGui Init
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
 
     // Center area
     SDL_Rect center;
@@ -232,6 +240,7 @@ int main() {
     {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+            ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT) {
                 isRunning = false;
             }
@@ -397,6 +406,21 @@ int main() {
         SDL_SetRenderDrawColor(renderer, 0xFF,0xFF,0xFF, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer);
 
+        // Render ImGui
+        static float somefloat = 0;
+
+        ImGui_ImplSDLRenderer2_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow();
+
+        ImGui::Begin("Hello ImGui");
+        ImGui::Text("SDL2 Renderer backend");
+        ImGui::SliderFloat("float", &somefloat, 0.0f, 1.0f);
+
+        ImGui::Image((ImTextureID)(intptr_t)tile_texture, ImVec2(256,256));
+        ImGui::End();
+        ImGui::Render();
 
         // Render areas
         SDL_SetRenderDrawColor(renderer, 0,0,0,SDL_ALPHA_OPAQUE);
@@ -475,7 +499,7 @@ int main() {
                 }
             }
         }
-        //SDL_RenderSetViewport(renderer, &viewportUI);
+        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(),renderer);
         SDL_RenderPresent(renderer);
     }
 
