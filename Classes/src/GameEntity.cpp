@@ -87,11 +87,11 @@ SDL_bool & GameEntity::GetProcessState() {
     return m_active;
 }
 
-void GameEntity::SetLayer(core::Resources::Layer layer) {
+void GameEntity::SetLayer(core::Resources::UI::Layer layer) {
     m_layer = layer;
 }
 
-core::Resources::Layer GameEntity::GetLayer() {
+core::Resources::UI::Layer GameEntity::GetLayer() {
     return m_layer;
 }
 

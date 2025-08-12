@@ -46,8 +46,8 @@ public:
     SDL_bool& GetProcessState(); //  Entity can be activated or deactivated, in which case the entity-manager would delete it
 
     // Layer
-    void SetLayer(core::Resources::Layer layer);
-    core::Resources::Layer GetLayer();
+    void SetLayer(core::Resources::UI::Layer layer);
+    core::Resources::UI::Layer GetLayer();
 
 
 private:
@@ -61,9 +61,8 @@ private:
     std::vector<BoxCollider2D*> m_colliders;
 
     // Layer to be Rendered
-    core::Resources::Layer m_layer;
+    core::Resources::UI::Layer m_layer;
 };
-
 
 
 #endif //GAMEENTITY_H

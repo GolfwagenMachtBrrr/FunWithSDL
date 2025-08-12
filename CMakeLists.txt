@@ -27,6 +27,8 @@ set(IMGUI_SRC
         imgui/imgui_demo.cpp
         imgui/backends/imgui_impl_sdl2.cpp
         imgui/backends/imgui_impl_sdlrenderer2.cpp
+        Classes/src/Tilemap.cpp
+        Classes/include/Tilemap.h
 )
 
 

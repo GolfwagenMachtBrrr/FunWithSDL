@@ -25,6 +25,7 @@ public:
     void SetRenderCalback(std::function<void(void)> func);
 
     SDL_Renderer* GetRenderer() const;
+    SDL_Window* GetWindow() const;
 
     int GetMouseX() const;
     int GetMouseY() const;

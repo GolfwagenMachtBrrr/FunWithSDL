@@ -11,6 +11,8 @@
 #include <vector>
 #include <iostream>
 
+using namespace util;
+
 class CollisionInfo
 {
 public:
@@ -31,7 +33,6 @@ private:
     CollisionInfo();
     ~CollisionInfo();
 
-    std::vector<Util::Vector2id> m_NPCs;
     std::vector<Uint64> m_deactivatedEntities;
     Uint64* m_lastIdentifier = nullptr; // latest entity number created by the entity-manager
 };

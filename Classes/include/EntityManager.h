@@ -15,7 +15,7 @@ public:
     static EntityManager& GetInstance();
 
     // add/rmv entitiy
-    bool CreateEntity(const std::string& name, SDL_Renderer* renderer, core::Resources::Layer layer);
+    bool CreateEntity(const std::string& name, SDL_Renderer* renderer, core::Resources::UI::Layer layer);
     void RemoveEntity(const std::string &name);
 
     // retrieve entity
@@ -29,7 +29,7 @@ public:
     void DeleteAll();
 
     // Render all entities of a specific layer
-    void RenderLayer(core::Resources::Layer layer);
+    void RenderLayer(core::Resources::UI::Layer layer);
 
 private:
     long long m_entityCount = 0;

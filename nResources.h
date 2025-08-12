@@ -5,31 +5,54 @@
 #ifndef NRESOURCES_H
 #define NRESOURCES_H
 
+#include "nUtil.h"
+#include <vector>
+#include <memory>
+
+
 namespace core
 {
-    namespace map
-    {
-        enum RenderType {
-            EMPTY = -1,
-            DEFAULT = 0,
-            IN_SELECTION = 1,
-            SELECTED = 2,
-        };
+    namespace Input {
+        namespace MapInput
+        {
+            struct InputData
+            {
+                util::Vector2i mouse{};
+                util::Vector2i tile{};
+                util::Vector2i tile_selected = util::Vector2i(-1,-1);
+
+                int tiletype = -1;
+                int rendertype = -1;
+            };
+        }
+
     }
+
+
     namespace Resources
     {
-        enum Layer {
-            BACKGROUND = 0,
-            MIDDLEGROUND = 1,
-            FOREGROUND = 2,
-            END
-        };
+        namespace UI {
+            enum Layer {
+                BACKGROUND = 0,
+                MIDDLEGROUND = 1,
+                FOREGROUND = 2,
+                END
+            };
+
+            enum UIType {
+                UNDEFINED = -1,
+                SELECTION,
+                CENTER, // Warum center !?!?!?! (more windows will kill me)
+            };
+        }
+
 
         namespace ID
         {
             enum Textures
             {
-
+                UNDEFINED = -1,
+                TEST,
             };
 
             enum Sounds
@@ -45,26 +68,70 @@ namespace core
 
     }
 
-        namespace Entities::ID
+    namespace map
+    {
+        enum RenderType {
+            EMPTY = -1,
+            DEFAULT = 0,
+            IN_SELECTION = 1,
+            SELECTED = 2,
+        };
+
+        struct Tile
         {
-            enum Objects
-            {
-            };
+            void Enable(const util::Vector2i& position, const util::Vector2i& tilesize) {
+                rendertype = RenderType::DEFAULT;
 
-            enum NPC
-            {
+                visible = true;
 
-            };
+                rectangle = {
+                    position.x,
+                    position.y,
+                    tilesize.x,
+                    tilesize.y
+                };
+            }
 
-            enum Items
-            {
+            // ID
+            int        tiletype   = 0;
+            RenderType rendertype = RenderType::EMPTY;
 
-            };
+            // Data
+            bool visible = false;
+            bool copyactive = false;
+            SDL_Rect rectangle;
+        };
 
-        }
+        struct TileMapData
+        {
+            // ID
+            Resources::ID::Textures textureID = Resources::ID::Textures::UNDEFINED;
+            Resources::UI::UIType   uiID      = Resources::UI::UIType::UNDEFINED;
 
+            // Data
+            int tilesize;
+            util::Vector2i tiles; // amount
+            util::Vector2i offset;
+            SDL_Rect area;
 
+            // storing input data
+            core::Input::MapInput::InputData inputdata;
 
+            // tile data
+            std::vector<std::vector<std::unique_ptr<core::map::Tile>>> tilemap;
+        };
+    }
+
+    namespace Entities::ID {
+        enum Objects {
+        };
+
+        enum NPCs {
+        };
+
+        enum Items {
+        };
+    }
 
 }
 

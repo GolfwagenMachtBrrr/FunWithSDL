@@ -23,14 +23,7 @@ void SDLApp::RunLoop() {
 
         m_EventCallback();
         m_UpdateCallback();
-
-        SDL_SetRenderDrawColor(m_renderer, 0,0,0, SDL_ALPHA_OPAQUE);
-        SDL_RenderClear(m_renderer);
-        SDL_SetRenderDrawColor(m_renderer, 0xFF,0xFF,0xFf, SDL_ALPHA_OPAQUE);
-
-
         m_RenderCallback();
-        SDL_RenderPresent(m_renderer);
 
         Uint32 elapsedTime = SDL_GetTicks64() - startTime;
         if (elapsedTime < m_maxFrameRate) {
@@ -53,6 +46,10 @@ void SDLApp::SetRenderCalback(std::function<void()> func) {
 
 SDL_Renderer * SDLApp::GetRenderer() const {
     return m_renderer;
+}
+
+SDL_Window * SDLApp::GetWindow() const {
+    return m_window;
 }
 
 int SDLApp::GetMouseX() const {

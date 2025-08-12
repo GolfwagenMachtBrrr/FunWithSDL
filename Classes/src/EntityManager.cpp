@@ -10,7 +10,7 @@ EntityManager & EntityManager::GetInstance() {
     return *instance;
 }
 
-bool EntityManager::CreateEntity(const std::string &name, SDL_Renderer *renderer, core::Resources::Layer layer) {
+bool EntityManager::CreateEntity(const std::string &name, SDL_Renderer *renderer, core::Resources::UI::Layer layer) {
     std::shared_ptr <GameEntity> newEntity = std::make_shared<GameEntity>(renderer, name);
     newEntity->SetLayer(layer);
     m_entities.insert(std::make_pair(name, newEntity));
@@ -44,16 +44,16 @@ void EntityManager::UpdateAll() {
 }
 
 void EntityManager::RenderAllLayers() {
-    RenderLayer(core::Resources::Layer::BACKGROUND);
-    RenderLayer(core::Resources::Layer::MIDDLEGROUND);
-    RenderLayer(core::Resources::Layer::FOREGROUND);
+    RenderLayer(core::Resources::UI::Layer::BACKGROUND);
+    RenderLayer(core::Resources::UI::Layer::MIDDLEGROUND);
+    RenderLayer(core::Resources::UI::Layer::FOREGROUND);
 }
 
 void EntityManager::DeleteAll() {
     m_entities.erase(m_entities.begin(), m_entities.end());
 }
 
-void EntityManager::RenderLayer(core::Resources::Layer layer) {
+void EntityManager::RenderLayer(core::Resources::UI::Layer layer) {
     for (const auto&[name, entity] : m_entities) {
         if (entity != nullptr && entity->GetLayer() == layer) {
             entity->Render();

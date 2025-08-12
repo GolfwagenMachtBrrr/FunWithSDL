@@ -151,10 +151,10 @@ inline void Pong_InitSDLApp() {
     app = new SDLApp(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 628);
     app->SetMaxFrameRate(15);
 
-    EntityManager::GetInstance().CreateEntity("Leftpäddle", app->GetRenderer(), core::Resources::Layer::FOREGROUND);
-    EntityManager::GetInstance().CreateEntity("rightpäddle", app->GetRenderer(), core::Resources::Layer::FOREGROUND);
-    EntityManager::GetInstance().CreateEntity("ball", app->GetRenderer(), core::Resources::Layer::FOREGROUND);
-    EntityManager::GetInstance().CreateEntity("court", app->GetRenderer(), core::Resources::Layer::BACKGROUND);
+    EntityManager::GetInstance().CreateEntity("Leftpäddle", app->GetRenderer(), core::Resources::UI::Layer::MIDDLEGROUND);
+    EntityManager::GetInstance().CreateEntity("rightpäddle", app->GetRenderer(), core::Resources::UI::Layer::FOREGROUND);
+    EntityManager::GetInstance().CreateEntity("ball", app->GetRenderer(), core::Resources::UI::Layer::FOREGROUND);
+    EntityManager::GetInstance().CreateEntity("court", app->GetRenderer(), core::Resources::UI::Layer::BACKGROUND);
 
     // Gät se enteties
     std::shared_ptr<GameEntity> leftpäddle  = EntityManager::GetInstance().GetEntity("Leftpäddle");
