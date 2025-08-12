@@ -111,6 +111,12 @@ private:
              if (data->tilemap[x][y]->rendertype != SELECTED) {
                  data->tilemap[x][y]->rendertype = IN_SELECTION;
              }
+            if (data->uiID == core::Resources::UI::UIType::SELECTION) {
+                Vector2i tmp =  m_tilemap.GetTileCoords()[data->tilemap[x][y]->tiletype].second;
+                std::cout << x << " " << y << " " << data->tilemap[x][y]->tiletype << std::endl;
+                std::cout << tmp.x << " " << tmp.y << std::endl;
+            }
+
         }
     }
 
@@ -123,7 +129,7 @@ private:
                 if (data->uiID == core::Resources::UI::UIType::SELECTION)
                 {
                     // reset earlier selection
-                    ResetUserInput();
+                    //ResetUserInput();
 
                     // copy
                     data->tilemap[x][y]->rendertype = SELECTED;
@@ -139,6 +145,7 @@ private:
                     // where is a better solution?
                     if (m_tilemap.GetSData()->inputdata.tiletype != -1) {
                         data->tilemap[x][y]->tiletype = m_tilemap.GetSData()->inputdata.tiletype;
+                        std::cout << m_tilemap.GetSData()->inputdata.tiletype << std::endl;
                     }
 
                 }
