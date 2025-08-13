@@ -63,3 +63,71 @@
                         if (camera.y < 0) camera.y = 0;
                         break;
                     }
+
+
+                    void TileMap::RenderTileMap(SDL_Renderer *renderer, TileMapData* data) {
+                        int tilesize = data->tilesize;   SDL_Rect area = data->area;
+                        int tilesX = data->tiles.x; int tilesY = data->tiles.y;
+                        Vector2i tileposition;
+
+                        for (int x = 0; x < tilesX; x++) {
+                            for (int y = 0; y < tilesY; y++) {
+
+                                int screenTileX = x * tilesize + area.x + data->offsetX;
+                                int screenTileY = y * tilesize + area.y + data->offsetY;
+
+                                if (screenTileX + tilesize < area.x || screenTileX > area.x + area.w ||
+                                    screenTileY + tilesize < area.y || screenTileY > area.y + area.h) {
+                                    continue;
+                                }
+
+                                int tiletype = data->tilemap[x][y]->tiletype;
+                                tileposition = coordinates[tiletype].second;
+
+                                if (util::MyLittleBoolean)
+                                {
+                                    tileposition = coordinates[util::MyLittleInteger].second;
+                                    int neuX = std::clamp(tileposition.x / tilesize, 0, tilesX - 1);
+                                    int neuY = std::clamp(tileposition.y / tilesize, 0, tilesY - 1);
+                                    data->tilemap[neuX][neuY]->tiletype = util::MyLittleInteger;
+                                }
+
+                                SDL_Rect src = {
+                                    tileposition.x,
+                                    tileposition.y,
+                                    tilesize,
+                                    tilesize
+                                };
+
+                                SDL_Rect dst = {
+                                    screenTileX,
+                                    screenTileY,
+                                    tilesize,
+                                    tilesize
+                                };
+
+
+                                switch (data->tilemap[x][y]->rendertype)
+                                {
+                                    case EMPTY:
+                                        break;
+                                    case DEFAULT:
+                                        SDL_SetRenderDrawColor(renderer, 0,0,0,SDL_ALPHA_OPAQUE);
+                                        SDL_RenderCopy(renderer, m_sprite->GetSDLTexture(), &src, &dst);
+                                        break;
+                                    case IN_SELECTION:
+                                        SDL_SetTextureColorMod(m_sprite->GetSDLTexture(), 255, 0, 0);
+                                        SDL_RenderCopy(renderer, m_sprite->GetSDLTexture(), &src,  &dst);
+                                        SDL_SetTextureColorMod(m_sprite->GetSDLTexture(), 255, 255, 255);
+                                        break;
+                                    case SELECTED:
+                                        SDL_SetTextureColorMod(m_sprite->GetSDLTexture(), 0, 0, 255);
+                                        SDL_RenderCopy(renderer, m_sprite->GetSDLTexture(), &src, &dst);
+                                        SDL_SetTextureColorMod(m_sprite->GetSDLTexture(), 255, 255, 255);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }

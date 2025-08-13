@@ -89,8 +89,11 @@ public:
             if (data->tilemap[data->inputdata.tile.x][data->inputdata.tile.y]->rendertype == IN_SELECTION)
                 data->tilemap[data->inputdata.tile.x][data->inputdata.tile.y]->rendertype = DEFAULT;
 
-        int _selectedX = (data->inputdata.tile.x = (mouseX - data->area.x) / data->tilesize);
-        int _selectedY = (data->inputdata.tile.y = (mouseY - data->area.y) / data->tilesize);
+        float worldMouseX = (mouseX - data->area.x - data->offsetX) / data->zoom;
+        float worldMouseY = (mouseY - data->area.y - data->offsetY) / data->zoom;
+
+        int _selectedX = data->inputdata.tile.x = static_cast<int>(worldMouseX / data->tilesize);
+        int _selectedY = data->inputdata.tile.y = static_cast<int>(worldMouseY / data->tilesize);
 
         // ..................................................................
 
@@ -111,12 +114,15 @@ private:
              if (data->tilemap[x][y]->rendertype != SELECTED) {
                  data->tilemap[x][y]->rendertype = IN_SELECTION;
              }
-            if (data->uiID == core::Resources::UI::UIType::SELECTION) {
-                Vector2i tmp =  m_tilemap.GetTileCoords()[data->tilemap[x][y]->tiletype].second;
-                std::cout << x << " " << y << " " << data->tilemap[x][y]->tiletype << std::endl;
-                std::cout << tmp.x << " " << tmp.y << std::endl;
-            }
-
+        }
+        else {
+           for (auto &x : data->tilemap) {
+               for (auto &y : x) {
+                   if (y->rendertype != SELECTED) {
+                       y->rendertype = DEFAULT;
+                   }
+               }
+           }
         }
     }
 
@@ -128,15 +134,15 @@ private:
             {
                 if (data->uiID == core::Resources::UI::UIType::SELECTION)
                 {
-                    // reset earlier selection
-                    //ResetUserInput();
-
+                    ResetUserInput(); 
                     // copy
                     data->tilemap[x][y]->rendertype = SELECTED;
 
                     // save tiletype & location
+                    data->inputdata.tile_selected.x = x;
+                    data->inputdata.tile_selected.y = y;
                     data->inputdata.tiletype = data->tilemap[x][y]->tiletype;
-                    data->inputdata.tile_selected = Vector2i(x,y);
+                    data->inputdata.rendertype = data->tilemap[x][y]->rendertype;
 
                 }
 
@@ -165,22 +171,26 @@ private:
         }
         return false;
     }
+
     void ResetUserInput()
     {
-        TileMapData* data = m_tilemap.GetSData();
-
-        // default values (ssss)
-        data->inputdata.rendertype = DEFAULT;
-
-        if (data->inputdata.tile_selected == Vector2i(-1,-1)) {
-            std::cout << "the system works" << std::endl;
-            return; // can I return a comment?
+        int x = m_tilemap.GetSData()->inputdata.tile_selected.x,
+            y = m_tilemap.GetSData()->inputdata.tile_selected.y;
+        
+        if (x == -1 || y == -1) {
+            return;
         }
 
-        // reset last selected
-        data->tilemap.at(data->inputdata.tile_selected.x).at(data->inputdata.tile_selected.x)->rendertype = DEFAULT;
-        data->inputdata.tile_selected = Vector2i(-1,-1);
+        m_tilemap.GetSData()->tilemap[x][y]->rendertype = DEFAULT;
+
+        m_tilemap.GetSData()->inputdata.tile_selected.x = -1;
+        m_tilemap.GetSData()->inputdata.tile_selected.y = -1;
+        m_tilemap.GetSData()->inputdata.tiletype = -1;
+        m_tilemap.GetSData()->inputdata.rendertype = DEFAULT;
+
+
     }
+
 
     void SetupImGui() {
         IMGUI_CHECKVERSION();
@@ -203,7 +213,7 @@ private:
         cdata.uiID = core::Resources::UI::UIType::CENTER;
 
         cdata.tilesize = 16;
-        cdata.tiles = Vector2i(1024 / 16, 528 / 16);
+        cdata.tiles = Vector2i(1024/8, 528/8);
         cdata.area = SDL_Rect{
             // magic
             (m_window->GetWindowWidth() - 1024) / 2,
@@ -211,6 +221,8 @@ private:
             1024,
             528
         };
+        cdata.offsetX = -255*2;
+        cdata.offsetY = -255; 
 
         sdata.tilesize = 16;
         sdata.tiles = Vector2i(256 / 16, 256 / 16);
@@ -221,6 +233,8 @@ private:
             256,
             256
         };
+        sdata.rangeX = 8;
+        sdata.rangeY = 8;
 
         std::vector<TileMapData> dataTable;
         dataTable.push_back(std::move(cdata));
@@ -233,6 +247,32 @@ private:
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::Begin("Debug");
+
+
+        ImGui::Text("tiletype");
+        ImGui::Text(std::to_string(m_tilemap.GetSData()->inputdata.tiletype).c_str());
+
+        ImGui::Text("rendertype");
+        ImGui::Text(std::to_string(m_tilemap.GetSData()->inputdata.rendertype).c_str());
+
+        ImGui::Text("tile_selected.x");
+        ImGui::Text(std::to_string(m_tilemap.GetSData()->inputdata.tile_selected.x).c_str());
+
+        ImGui::Text("tile_selected.y");
+        ImGui::Text(std::to_string(m_tilemap.GetSData()->inputdata.tile_selected.y).c_str());
+
+        ImGui::Text("............");
+        if (!m_tilemap.GetSData()->tilemap.empty())
+        {
+            if (m_tilemap.GetSData()->inputdata.tile_selected.x >= 0 &&m_tilemap.GetSData()->inputdata.tile_selected.y >=  0 ) {
+                ImGui::Text(std::to_string(m_tilemap.GetSData()->tilemap[m_tilemap.GetSData()->inputdata.tile_selected.x][m_tilemap.GetSData()->inputdata.tile_selected.y]->rendertype).c_str());
+            }
+
+        }
+        ImGui::End();
+
+
         ImGui::Begin("Hello ImGui");
         ImGui::Text("Fill me Baby");
         ImGui::Checkbox("Fill", &util::MyLittleBoolean);
@@ -240,6 +280,16 @@ private:
 
         ImGui::Image((ImTextureID) (intptr_t) m_tilemap.GetSprite().GetSDLTexture(), ImVec2(256, 256));
         ImGui::End();
+
+        ImGui::Begin("offsett");
+        ImGui::SliderInt("x", &m_tilemap.GetCData()->offsetX, -255*4, 0);
+        ImGui::SliderInt("y", &m_tilemap.GetCData()->offsetY, -255*2, 0);
+        ImGui::End();
+
+        ImGui::Begin("zoom");
+        ImGui::SliderFloat("x", &m_tilemap.GetCData()->zoom, 0, 4);
+        ImGui::End();
+
         ImGui::Render();
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), m_window->GetRenderer());
     }

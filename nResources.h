@@ -110,8 +110,11 @@ namespace core
 
             // Data
             int tilesize;
+            int offsetX = 0, offsetY = 0;
+            int rangeX, rangeY;
+            float zoom = 1.0f;
+
             util::Vector2i tiles; // amount
-            util::Vector2i offset;
             SDL_Rect area;
 
             // storing input data

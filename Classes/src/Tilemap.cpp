@@ -25,6 +25,10 @@ void TileMap::LoadMap(TileMapData* data) {
             std::unique_ptr<Tile> tile = std::make_unique<Tile>();
 
             tile->tiletype = rand() % 256;
+            if (data->uiID == core::Resources::UI::UIType::SELECTION) {
+                tile->tiletype = y + x*data->tiles.y;
+            }
+
             tile->rendertype = DEFAULT;
 
             tile->visible = true;
@@ -110,66 +114,44 @@ void TileMap::Render(SDL_Renderer *renderer) {
 }
 
 void TileMap::RenderTileMap(SDL_Renderer *renderer, TileMapData* data) {
-    int tilesize = data->tilesize;   SDL_Rect area = data->area;
+    int tilesize = data->tilesize * data->zoom;   SDL_Rect area = data->area;
     int tilesX = data->tiles.x; int tilesY = data->tiles.y;
     Vector2i tileposition;
+
 
     for (int x = 0; x < tilesX; x++) {
         for (int y = 0; y < tilesY; y++) {
 
-            int screenTileX = x * tilesize + area.x;
-            int screenTileY = y * tilesize + area.y;
+            int screenTileX = x * tilesize + area.x + data->offsetX;
+            int screenTileY = y * tilesize + area.y + data->offsetY;
 
-            if (screenTileX + tilesize < area.x || screenTileX > area.x + area.w ||
-                screenTileY + tilesize < area.y || screenTileY > area.y + area.h) {
+            if (screenTileX < area.x || screenTileX > area.x + area.w ||
+                screenTileY < area.y || screenTileY > area.y + area.h) {
                 continue;
             }
 
-            switch (data->uiID)
+            int tiletype = data->tilemap[x][y]->tiletype;
+            tileposition = coordinates[tiletype].second;
+
+            if (util::MyLittleBoolean)
             {
-                case core::Resources::UI::CENTER:
-                {
-                    // standard
-                    int tiletype = data->tilemap[x][y]->tiletype;
-                    tileposition = coordinates[tiletype].second;
-
-                    // fill (imgui)
-                    if (util::MyLittleBoolean)
-                    {
-                        tileposition = coordinates[util::MyLittleInteger].second;
-                        int neuX = std::clamp(tileposition.x / tilesize, 0, tilesX - 1);
-                        int neuY = std::clamp(tileposition.y / tilesize, 0, tilesY - 1);
-                        data->tilemap[neuX][neuY]->tiletype = util::MyLittleInteger;
-                    }
-
-                    break;
-                }
-
-                case core::Resources::UI::SELECTION:
-                {
-                    int index = y + x*tilesY;
-                    tileposition = coordinates[index].second;
-                    data->tilemap[x][y]->tiletype = index;
-
-                   // std::cout << index << " : " << tileposition.x << " " << tileposition.y << std::endl;
-                    break;
-                }
-
-                default:
-                    break;
+                tileposition = coordinates[util::MyLittleInteger].second;
+                int neuX = std::clamp(tileposition.x / tilesize, 0, tilesX - 1);
+                int neuY = std::clamp(tileposition.y / tilesize, 0, tilesY - 1);
+                p_cdata.tilemap[x][y]->tiletype = util::MyLittleInteger;
             }
 
             SDL_Rect src = {
-                tileposition.x, // x * data->tilesize
+                tileposition.x,
                 tileposition.y,
-                tilesize,
-                tilesize
+                (int)(tilesize/data->zoom),
+                (int)(tilesize/data->zoom)
             };
 
             SDL_Rect dst = {
-                x * tilesize + area.x,
-                y * tilesize + area.y,
-                tilesize,
+                screenTileX,
+                screenTileY,
+             tilesize,
                 tilesize
             };
 
@@ -198,6 +180,9 @@ void TileMap::RenderTileMap(SDL_Renderer *renderer, TileMapData* data) {
         }
     }
 }
+
+
+
 
 void TileMap::LoadSprite(SDL_Renderer *renderer) {
     std::string filepath = "/home/judelhuu/CLionProjects/SDL_Tutorial/Images/Tiles/tiles.bmp";
