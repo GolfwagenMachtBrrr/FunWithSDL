@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"/home/judelhuu/CLionProjects/SDL_Tutorial/build/cmake_install.cmake"
+		"/home/judelhuu/Programming/FunWithSDL/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

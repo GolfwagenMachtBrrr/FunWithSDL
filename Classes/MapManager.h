@@ -265,8 +265,10 @@ private:
         ImGui::Text("............");
         if (!m_tilemap.GetSData()->tilemap.empty())
         {
-            if (m_tilemap.GetSData()->inputdata.tile_selected.x >= 0 &&m_tilemap.GetSData()->inputdata.tile_selected.y >=  0 ) {
-                ImGui::Text(std::to_string(m_tilemap.GetSData()->tilemap[m_tilemap.GetSData()->inputdata.tile_selected.x][m_tilemap.GetSData()->inputdata.tile_selected.y]->rendertype).c_str());
+            if (m_tilemap.GetSData()->inputdata.tile_selected.x >= 0 && m_tilemap.GetSData()->inputdata.tile_selected.y >=  0 ) {
+                ImGui::Text(std::to_string(
+                    m_tilemap.GetSData()->tilemap[m_tilemap.GetSData()->inputdata.tile_selected.x][m_tilemap.GetSData()->inputdata.tile_selected.y]->rendertype).c_str()
+                );
             }
 
         }
@@ -294,13 +296,13 @@ private:
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), m_window->GetRenderer());
     }
 
+
 private:
     static MapManager* s_instance;
 
     SDLApp*     m_window;
     TileMap     m_tilemap;
-
-
+    
     MapManager() {
     }
     ~MapManager() {
